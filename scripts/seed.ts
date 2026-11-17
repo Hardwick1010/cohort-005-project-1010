@@ -2792,6 +2792,37 @@ This course is still in draft while the cluster examples are rewritten against t
 
   console.log("Created Liam's Refund Request.");
 
+  // ─── Liam's Bookmarks and Notes ───
+  // Private to Liam, so they show on his Lesson pages and his Saved page and
+  // nowhere else.
+
+  db.insert(schema.bookmarks)
+    .values([
+      { userId: liam.id, lessonId: course1LessonIds[1], createdAt: daysAgo(7) },
+      { userId: liam.id, lessonId: course1LessonIds[3], createdAt: daysAgo(5) },
+    ])
+    .run();
+  db.insert(schema.notes)
+    .values([
+      {
+        userId: liam.id,
+        lessonId: course1LessonIds[1],
+        body: "Come back to this one.\nThe second example is the one to copy.",
+        createdAt: daysAgo(7),
+        updatedAt: daysAgo(6),
+      },
+      {
+        userId: liam.id,
+        lessonId: course1LessonIds[2],
+        body: "Try this with *my own* data before moving on.",
+        createdAt: daysAgo(5),
+        updatedAt: daysAgo(5),
+      },
+    ])
+    .run();
+
+  console.log("Created Liam's Bookmarks and Notes.");
+
   // ─── Marta's Refund Request ───
   // A Team Licence with no Claimed Seats, so a Platform Admin can approve it.
   // Its Seats are on hold while the request is open.
@@ -2849,6 +2880,9 @@ This course is still in draft while the cluster examples are rewritten against t
   console.log(`  Enrollments: ${countRows(schema.enrollments)}`);
   console.log(`  Course ratings: ${countRows(schema.courseRatings)}`);
   console.log(`  Lesson comments: ${countRows(schema.comments)}`);
+  console.log(
+    `  Bookmarks: ${countRows(schema.bookmarks)}, notes: ${countRows(schema.notes)}`
+  );
   console.log(
     `  Lesson progress: ${countRows(schema.lessonProgress)} (${countRows(schema.lessonProgress, eq(schema.lessonProgress.status, LessonProgressStatus.Completed))} completed)`
   );
