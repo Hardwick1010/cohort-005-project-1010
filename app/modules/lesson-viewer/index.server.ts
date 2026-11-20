@@ -15,6 +15,7 @@ export {
   getLastWatchPosition,
   calculateWatchProgress,
   getCommentById,
+  getQuizById,
   getQuizByLessonId,
   getQuizWithQuestions,
   getBestAttempt,

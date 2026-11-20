@@ -239,6 +239,10 @@ export function getCommentById(commentId: number) {
   return db.select().from(comments).where(eq(comments.id, commentId)).get();
 }
 
+export function getQuizById(quizId: number) {
+  return db.select().from(quizzes).where(eq(quizzes.id, quizId)).get();
+}
+
 export function getQuizByLessonId(lessonId: number) {
   return db.select().from(quizzes).where(eq(quizzes.lessonId, lessonId)).get();
 }
