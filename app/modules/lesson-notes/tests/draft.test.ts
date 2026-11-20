@@ -63,6 +63,13 @@ describe("describeNoteDraft", () => {
     expect(describeNoteDraft("abcdef", "abcdef", 5).status).toBe("too-long");
   });
 
+  it("is not too long when only surrounding whitespace takes it over the limit", () => {
+    const draft = describeNoteDraft("abcde\n\n", null, 5);
+    expect(draft.status).toBe("unsaved");
+    expect(draft.canSave).toBe(true);
+    expect(draft.characterCount).toBe("5 / 5");
+  });
+
   it("groups thousands in the character count", () => {
     expect(describeNoteDraft("a".repeat(1234), null, 2000).characterCount).toBe(
       "1,234 / 2,000"

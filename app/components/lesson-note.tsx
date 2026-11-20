@@ -6,7 +6,11 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Textarea } from "~/components/ui/textarea";
 import { MAX_NOTE_LENGTH } from "~/lib/notes";
 import { cn, formatRelativeTime } from "~/lib/utils";
-import { describeNoteDraft } from "~/modules/lesson-notes";
+import {
+  describeNoteDraft,
+  type NoteDraft,
+  type NoteDraftStatus,
+} from "~/modules/lesson-notes";
 
 export type SavedNote = { body: string; updatedAt: string };
 
@@ -32,7 +36,12 @@ export function LessonNote({ note }: { note: SavedNote | null }) {
             name="body"
             rows={4}
             value={body}
-            onChange={(event) => setBody(event.target.value)}
+            onChange={(event) => {
+              setBody(event.target.value);
+              // The error was about the text that was submitted; once the
+              // text changes it no longer applies.
+              if (error) fetcher.reset();
+            }}
             placeholder="Jot down what you want to remember from this lesson..."
             aria-label="Your notes"
             aria-invalid={draft.status === "too-long"}
@@ -51,18 +60,24 @@ export function LessonNote({ note }: { note: SavedNote | null }) {
               error={error}
               updatedAt={note?.updatedAt}
             />
-            <span
-              className={cn(
-                "ml-auto text-xs tabular-nums text-muted-foreground",
-                draft.status === "too-long" && "text-red-600"
-              )}
-            >
-              {draft.characterCount}
-            </span>
+            <NoteCharacterCount draft={draft} />
           </div>
         </fetcher.Form>
       </CardContent>
     </Card>
+  );
+}
+
+function NoteCharacterCount({ draft }: { draft: NoteDraft }) {
+  return (
+    <span
+      className={cn(
+        "ml-auto text-xs tabular-nums text-muted-foreground",
+        draft.status === "too-long" && "text-destructive"
+      )}
+    >
+      {draft.characterCount}
+    </span>
   );
 }
 
@@ -86,14 +101,14 @@ function NoteStatus({
   error,
   updatedAt,
 }: {
-  status: ReturnType<typeof describeNoteDraft>["status"];
+  status: NoteDraftStatus;
   error: string | undefined;
   updatedAt: string | undefined;
 }) {
-  if (error) return <span className="text-sm text-red-600">{error}</span>;
+  if (error) return <span className="text-sm text-destructive">{error}</span>;
   if (status === "too-long") {
     return (
-      <span className="text-xs text-red-600">
+      <span className="text-xs text-destructive">
         Too long to save. Trim it down first.
       </span>
     );

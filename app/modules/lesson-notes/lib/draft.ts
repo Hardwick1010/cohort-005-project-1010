@@ -11,22 +11,23 @@ export function describeDraft(
   savedBody: string | null,
   maxLength: number
 ): NoteDraft {
-  const status = statusOf(draft, savedBody, maxLength);
+  // The note is stored trimmed, so whitespace at either end neither counts
+  // towards the limit nor makes a change.
+  const trimmed = draft.trim();
+  const status = statusOf(trimmed, savedBody, maxLength);
   return {
     status,
     canSave: status === "unsaved",
-    characterCount: `${draft.length.toLocaleString("en")} / ${maxLength.toLocaleString("en")}`,
+    characterCount: `${trimmed.length.toLocaleString("en")} / ${maxLength.toLocaleString("en")}`,
   };
 }
 
 function statusOf(
-  draft: string,
+  trimmed: string,
   savedBody: string | null,
   maxLength: number
 ): NoteDraftStatus {
-  if (draft.length > maxLength) return "too-long";
-  const trimmed = draft.trim();
+  if (trimmed.length > maxLength) return "too-long";
   if (trimmed.length === 0) return "empty";
-  // The note is stored trimmed, so whitespace at either end is not a change.
   return trimmed === savedBody ? "saved" : "unsaved";
 }
